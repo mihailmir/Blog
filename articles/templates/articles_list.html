@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Articles</title>
+{% endblock title %}
+
+{% block content %}
+    <h2>
+        Articles
+    </h2>
+    {% if user.is_authenticated %}
+        <div class="create-link" >
+            <a href="{% url 'create_article' %}" class="btn btn-success">Create article</a>
+        </div>
+    {% endif %}
+    {% for field in articles %}
+        <ul>
+            <li>
+                <h2>
+                    <a href="{% url 'view_article' field.id %}">{{ field.title }}</a>
+                </h2>
+                <p>{{ field.author }}</p>
+                <div>
+                    {{ field.article_body }}
+                </div>
+            </li>
+        </ul>
+    {% endfor %}
+{% endblock %}

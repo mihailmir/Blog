@@ -1,0 +1,12 @@
+h2 {
+    width: 100%;
+    text-align: center;
+    margin: 40px;
+}
+ul {
+    list-style-type: none;
+}
+.create-link {
+    width: 100%;
+    margin: 20px 40px;
+}

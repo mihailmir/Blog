@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title> Create page</title>
+{% endblock title %}
+{% block content %}
+    <h2 class="text-head">
+        Create article
+    </h2>
+    <form method="post" class="col-md-8 col-sm-10 mx-auto text-center form p-4" action="{% url 'create_article' %}">
+        {% csrf_token %}
+        {{ form.title.label }}
+        {{ form.title }}
+        {{ form.article_body.label }}
+        {{ form.article_body }}
+        {{ form.errors }}
+        <button type="submit" class="btn btn-success">Create article</button>
+    </form>
+
+{% endblock %}

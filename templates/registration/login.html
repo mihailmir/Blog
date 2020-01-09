@@ -1,0 +1,23 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Login page</title>
+{% endblock title %}
+
+{% block content %}
+    <div class="col-md-8 col-sm-10 mx-auto text-center form p-4">
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <label>{{ field.label }}</label>
+                <p>{{ field }}</p>
+                <p>{{ field.errors }}</p>
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">Login</button>
+        </form>
+    </div>
+{% endblock %}
