@@ -1,6 +1,5 @@
-from django.forms import ModelForm, TextInput, Textarea, HiddenInput, IntegerField
+from django.forms import ModelForm, TextInput, Textarea, IntegerField
 from .models import Articles, Comments
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
@@ -38,14 +37,13 @@ class CommentsForm(ModelForm):
         fields = ['comment_body']
         widgets = {
             'comment_body': Textarea(attrs={'class': 'form-control'}),
-
         }
 
-    def save(self, commit=True, user=None):
+    def save(self, commit=True, user_id=None):
 
         self.instance.__class__.add_root(
             article_id=self.cleaned_data.get('article'),
-            author_id=user.id,
+            author_id=user_id,
             comment_body=self.cleaned_data.get('comment_body')
         )
         return self.instance
@@ -54,17 +52,13 @@ class CommentsForm(ModelForm):
 class ChildCommentsForm(CommentsForm):
     parent = IntegerField(validators=[validate_entity(Comments)])
 
-    def save(self, commit=True, user=None):
+    def save(self, commit=True, user_id=None):
 
         article = self.instance.__class__.objects.get(pk=self.cleaned_data.get('parent'))
         self.instance.__class__.add_child(
             article,
             article_id=self.cleaned_data.get('article'),
-            author_id=user.id,
+            author_id=user_id,
             comment_body=self.cleaned_data.get('comment_body')
         )
         return self.instance
-
-
-
-

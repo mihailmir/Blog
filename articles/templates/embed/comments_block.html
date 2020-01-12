@@ -1,0 +1,16 @@
+{% for comment in comments %}
+    <li style="margin-left: {% widthratio comment.get_depth 1 50 %}px; margin-bottom: 50px">
+        <div>{{ comment.comment_body }}</div>
+        <div class="mb-4">
+            <span>{{ comment.create_date }}</span>
+            <span>{{ comment.author }}</span>
+        </div>
+        {% if user.is_authenticated %}
+            <button class="reply-button primary" comment="{{ comment.id }}">Reply</button>
+            <div class="reply-form-{{ comment.id }}"></div>
+        {% endif %}
+    </li>
+{% endfor %}
+{% if page_obj.has_next %}
+    <button class="view-more reply-button btn btn-secondary" page="{{page_obj.number|add:1}}">View more</button>
+{% endif %}

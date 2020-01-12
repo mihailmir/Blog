@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import os
 
+BROKER_URL = "localhost"
+BROKER_BACKEND = "redis"
+REDIS_PORT = 6379
+REDIS_HOST = "localhost"
+REDIS_CONNECT_RETRY = True
+
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'articles',
-    'registration'
+    'registration',
 ]
 
 MIDDLEWARE = [

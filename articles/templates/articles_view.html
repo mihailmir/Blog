@@ -11,53 +11,67 @@
     </div>
     <h3 class="w-100">Comments</h3>
     <div>
-        <ul>
-            {% for tree in comments %}
-                {% for c in tree %}
-                    <li style="margin-left: {% widthratio c.get_depth 1 50 %}px; margin-bottom: 50px">
-                        <p>{{ c.comment_body }}</p>
-                        <p>{{ c.create_date }}</p>
-                        <button class="reply-button primary" comment="{{ c.id }}">Reply</button>
-                        <div class="reply-form-{{ c.id }}"  is_collapsed="False"></div>
-                    </li>
-                {% endfor %}
-            {% endfor %}
+        <ul class="comment-block">
         </ul>
-        <form method="post" class="m-5" action="{% url 'add_comment' %}">
-            {% csrf_token %}
-            {{ comments_form.comment_body }}
-            <input type="hidden" name="article" value="{{ article_id }}">
-            <input type="hidden" name="author" value="{{ user }}">
-            <button type="submit" class="btn btn-success">Add</button>
-        </form>
+        {% if user.is_authenticated %}
+            <form method="post" class="m-5" action="{% url 'add_comment' %}">
+                {% csrf_token %}
+                {{ comments_form.comment_body }}
+                <input type="hidden" name="article" value="{{ article.id }}">
+                <button type="submit" class="btn btn-success">Add</button>
+            </form>
+        {% endif %}
     </div>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $(".reply-button").click(function(e) {
-            var comment_id = $(this).attr('comment');
-            var comment_container = $(".reply-form-" + comment_id);
-            var is_collapsed = comment_container.attr('is_collapsed') === 'True' ? true: false;
-            if (!is_collapsed){
-                comment_container.attr("is_collapsed", "True");
-                $.ajax('{% url 'add_comment' %}', {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            function UpdateComments(article_id, page) {
+                $.ajax('{% url 'view_comment' %}', {
                     type: 'get',
-                    data: { 'article_id': {{article.id}}, 'comment_id': comment_id},
+                    data: { 'article_id': {{article.id}}, 'page': page},
                     dataType: 'html',
                     success : function(html) {
-                        $(".reply-form-" + comment_id).append(html);
+                        $(".comment-block").append(html);
                     },
                     error: function() {
                         alert("Error");
                     }
                 });
             }
-            else {
-                comment_container.hide();
-            }
+            UpdateComments({{article.id}}, 1);
+            $(document).on('click', '.view-more' , function(e) {
+                e.preventDefault();
+                page = $(this).attr('page');
+                UpdateComments({{article.id}}, page);
+                $(this).hide();
+            });
+
+            $(document).on('click', '.reply-button' , function(e) {
+                e.preventDefault();
+                var comment_id = $(this).attr('comment');
+                var comment_container = $(".reply-form-" + comment_id);
+
+                if ($(comment_container).is(':empty')){
+                    $.ajax('{% url 'add_comment' %}', {
+                        type: 'get',
+                        data: { 'article_id': {{article.id}}, 'comment_id': comment_id},
+                        dataType: 'html',
+                        success : function(html) {
+                            $(".reply-form-" + comment_id).html(html);
+                        },
+                        error: function() {
+                            alert("Error");
+                        }
+                    });
+                }
+                else if ($(comment_container).is(':hidden')){
+                    comment_container.show();
+                }
+                else {
+                    comment_container.hide();
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 {% endblock %}
-<script></script>

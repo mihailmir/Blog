@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from treebeard.mp_tree import MP_Node
 
-# Create your models here.
-
 
 class Articles(models.Model):
     title = models.CharField(db_index=True, max_length=50)
