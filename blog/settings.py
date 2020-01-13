@@ -17,9 +17,7 @@ REDIS_PORT = 6379
 REDIS_HOST = "localhost"
 REDIS_CONNECT_RETRY = True
 
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-
+CELERY_ACCEPT_CONTENT = ['json']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
