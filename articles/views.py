@@ -21,7 +21,7 @@ class CustomPaginator(Paginator):
         temp = []
         page = 1
         for c in self.object_list:
-            temp.extend(Comments.get_tree(c))
+            temp.extend(c.__class__.get_tree(c))
             if len(temp) >= self.per_page:
                 result[page] = temp
                 page += 1
