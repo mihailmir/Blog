@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView, View
-from .forms import ArticlesForm, CommentsForm
+from .forms import ArticlesForm, CommentsForm, ChildCommentsForm
 from .models import Articles, Comments
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.views.generic.list import MultipleObjectMixin
 from django.utils.functional import cached_property
-from .tasks import add_comments
 
 
 class CustomPaginator(Paginator):
@@ -99,5 +98,11 @@ class ArticleAddCommentView(LoginRequiredMixin, View):
         )
 
     def post(self, request, *args, **kwargs):
-        add_comments.apply_async(args=[request.user.id],  kwargs=request.POST, countdown=10)
-        return redirect('view_article', request.POST.get('article'))
+        form = CommentsForm
+        params = request.POST
+        if params.get('parent'):
+            form = ChildCommentsForm
+        form = form(params)
+        if form.is_valid():
+            form.save(commit=True, user_id=request.user.id)
+        return redirect('view_article', params.get('article'))
