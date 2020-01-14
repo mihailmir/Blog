@@ -12,5 +12,5 @@ class UserCreateView(CreateView):
     success_url = reverse_lazy('articles')
 
     def form_valid(self, form):
-        send_mail.apply_async(args=[self.request.POST.get('username'), form.cleaned_data.get('email')])
+        send_mail.apply_async(args=[form.cleaned_data.get('username'), form.cleaned_data.get('email')])
         return super().form_valid(form)
