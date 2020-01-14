@@ -14,7 +14,7 @@
         <ul class="comment-block">
         </ul>
         {% if user.is_authenticated %}
-            <form method="post" class="m-5" action="{% url 'add_comment' %}">
+            <form method="post" class="m-5 add-comment" action="{% url 'add_comment' %}">
                 {% csrf_token %}
                 {{ comments_form.comment_body }}
                 <input type="hidden" name="article" value="{{ article.id }}">
@@ -25,31 +25,51 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            var page = 1
+
             function UpdateComments(article_id, page) {
                 $.ajax('{% url 'view_comment' %}', {
                     type: 'get',
                     data: { 'article_id': {{article.id}}, 'page': page},
                     dataType: 'html',
                     success : function(html) {
-                        $(".comment-block").append(html);
+                        $(".comment-block").html(html);
                     },
                     error: function() {
                         alert("Error");
                     }
                 });
             }
-            UpdateComments({{article.id}}, 1);
-            $(document).on('click', '.view-more' , function(e) {
+
+            UpdateComments({{article.id}}, page);
+
+            $(document).on('submit', '.add-comment' , function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax(form.attr('action'), {
+                    type: form.attr('method'),
+                    data: form.serialize(),
+                    success : function() {
+                        UpdateComments({{article.id}}, page);
+                        form.trigger('reset');
+                    },
+                    error: function() {
+                        alert("Error");
+                    }
+                });
+
+            });
+
+            $(document).on('click', '.view-next, .view-prev' , function(e) {
                 e.preventDefault();
                 page = $(this).attr('page');
                 UpdateComments({{article.id}}, page);
-                $(this).hide();
             });
 
             $(document).on('click', '.reply-button' , function(e) {
                 e.preventDefault();
-                var comment_id = $(this).attr('comment');
-                var comment_container = $(".reply-form-" + comment_id);
+                let comment_id = $(this).attr('comment');
+                let comment_container = $(".reply-form-" + comment_id);
 
                 if ($(comment_container).is(':empty')){
                     $.ajax('{% url 'add_comment' %}', {

@@ -12,5 +12,8 @@
     </li>
 {% endfor %}
 {% if page_obj.has_next %}
-    <button class="view-more reply-button btn btn-secondary" page="{{page_obj.number|add:1}}">View more</button>
+    <button class="view-next reply-button btn btn-secondary m-2" page="{{page_obj.number|add:1}}">View next</button>
+{% endif %}
+{% if page_obj.has_previous %}
+    <button class="view-prev reply-button btn btn-secondary m-2 float-left" page="{{page_obj.number|add:-1}}">View prev</button>
 {% endif %}
