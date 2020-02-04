@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     <title>View Article</title>
-{% endblock title %}
+{% endblock %}
+
+{% block extra_head %}
+    <script type='text/javascript' src="{% static 'article.js' %}"></script>
+{% endblock %}
 
 {% block content %}
     <h2>{{ article.title }}</h2>
@@ -25,72 +29,11 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            var page = 1
-
-            function UpdateComments(article_id, page) {
-                $.ajax('{% url 'view_comment' %}', {
-                    type: 'get',
-                    data: { 'article_id': {{article.id}}, 'page': page},
-                    dataType: 'html',
-                    success : function(html) {
-                        $(".comment-block").html(html);
-                    },
-                    error: function() {
-                        alert("Error");
-                    }
-                });
-            }
-
-            UpdateComments({{article.id}}, page);
-
-            $(document).on('submit', '.add-comment' , function(e) {
-                e.preventDefault();
-                let form = $(this);
-                $.ajax(form.attr('action'), {
-                    type: form.attr('method'),
-                    data: form.serialize(),
-                    success : function() {
-                        UpdateComments({{article.id}}, page);
-                        form.trigger('reset');
-                    },
-                    error: function() {
-                        alert("Error");
-                    }
-                });
-
-            });
-
-            $(document).on('click', '.view-next, .view-prev' , function(e) {
-                e.preventDefault();
-                page = $(this).attr('page');
-                UpdateComments({{article.id}}, page);
-            });
-
-            $(document).on('click', '.reply-button' , function(e) {
-                e.preventDefault();
-                let comment_id = $(this).attr('comment');
-                let comment_container = $(".reply-form-" + comment_id);
-
-                if ($(comment_container).is(':empty')){
-                    $.ajax('{% url 'add_comment' %}', {
-                        type: 'get',
-                        data: { 'article_id': {{article.id}}, 'comment_id': comment_id},
-                        dataType: 'html',
-                        success : function(html) {
-                            $(".reply-form-" + comment_id).html(html);
-                        },
-                        error: function() {
-                            alert("Error");
-                        }
-                    });
-                }
-                else if ($(comment_container).is(':hidden')){
-                    comment_container.show();
-                }
-                else {
-                    comment_container.hide();
-                }
-            });
+            ArticlePage.init(
+                {{article.id}},
+                1,
+                {'add_comment': '{% url 'add_comment' %}', 'view_comment': '{% url 'view_comment' %}'}
+            );
         });
     </script>
 

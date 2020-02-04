@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.views.generic.list import MultipleObjectMixin
 from django.utils.functional import cached_property
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 
 class CustomPaginator(Paginator):
@@ -15,7 +15,6 @@ class CustomPaginator(Paginator):
         super().__init__(object_list, per_page, orphans=orphans,
                  allow_empty_first_page=allow_empty_first_page)
         self.paginate()
-
     def paginate(self):
         result = {}
         temp = []
@@ -104,7 +103,6 @@ class ArticleAddCommentView(LoginRequiredMixin, View):
         if params.get('parent'):
             form = ChildCommentsForm
         form = form(params)
-        print(form.is_valid())
         if form.is_valid():
             form.save(commit=True, user_id=request.user.id)
-        return HttpResponse()
+        return JsonResponse(form.errors)
