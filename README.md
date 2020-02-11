@@ -7,4 +7,3 @@ Setup instruction:
 
 3 docker-compose build , docker-compose up 
 
-4 make migrations inside web container 
