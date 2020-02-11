@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_NAME}
+    volumes:
+      - ./db_data:/var/lib/postgresql/10/main
+    restart: always
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_NAME}
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  redis:
+    image: "redis:alpine"
+    restart: always
+
+  celery:
+    build: .
+    command: celery -A blog worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+    environment:
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+    restart: always
+
+
+
+
